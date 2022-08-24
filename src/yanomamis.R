@@ -47,11 +47,27 @@ left_join(armas_idade, index_polos) %>%
   arrange(desc(total)) %>% 
   clipr::write_clip()
 
-armas_tempo %>% 
-  clipr::write_clip()
+armas_idade %>% 
+  group_by(polo_base) %>% 
+  summarise(totalpolo = sum(valor, na.rm=T)) -> totalpolos
+
+left_join(armas_idade, totalpolos) %>% 
+  ggplot() +
+  aes(x=valor, y=reorder(polo_base, totalpolo), fill=faixaetaria) +
+  geom_tile()
 
 # DESMATAMENTO
 aumento_maior <- read_csv("C:/Users/rodol/OneDrive/Desktop/Projetos/Yanomamis Sumauma/data/desmatamento/Copy of Desmatamento pelo garimpo - Yanomami - Com maior aumento.csv") %>% 
   gather("ano", "valor", 2:3) %>% 
   clipr::write_clip()
-  
+
+# VISITAS DE SAÚDE
+visitas_saude <- read_csv("C:/Users/rodol/OneDrive/Desktop/Projetos/Yanomamis Sumauma/data/visitas_saude/Copy of 2_Visitas_da_equipe_de_saude_DSEI_Yanomina_por_Polo_Base - Planilha2.csv")
+
+visitas_saude %>% 
+  gather("ano", "valor", 2:8) %>%
+  filter(ano %in% c("2017", "2022")) %>% 
+  clipr::write_clip()
+  ggplot() +
+  aes(x=ano, y=valor, color=polo_base, group=polo_base) +
+  geom_line() 
